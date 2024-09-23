@@ -1,0 +1,7 @@
+Angular.js v 1.6.9 - Para uso de directivas y logicas en el js.
+Bootstrap v 4.6.0 - Para uso de las clase de estilo, tablas y modales.
+SweetAlert2 v 11 - Para uso de alertas y mensajes.
+Jquery v 3.7.1 - Para simplificar la manipulación del DOM.
+fpdf 1.86 - Para generar pdf, informes y facturas.
+font-awesome 6.5.1 Para el uso de iconos en los campos y botones.
+PHP v 8.2.18

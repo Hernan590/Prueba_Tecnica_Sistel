@@ -1,0 +1,359 @@
+<HTML ng-app="myApp" lang="en">
+    <head>
+        <title>Gestion De Productos</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+
+    <body ng-controller="gestionctrl">
+
+        <div id="contenido_principal" class="container-fluid">
+            
+            <div class="row">
+                <div ng-show="inventario_productos" class="container text-center"><h1><b>Inventario Productos</b></h1></div>
+                <div ng-show="lista_ventas" class="container text-center"><h1><b>Ventas</b></h1></div>
+            </div>
+            <br><br>
+
+            <div class="row" ng-show="inventario_productos">
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+                <div class="col-12 col-sm-12 col-md-2">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        </div>
+                        <input type="text" class="form-control" ng-model="buscar" placeholder="Consultar Producto">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 text-center">
+                    <div class="input-group mb-3">
+                        <button data-toggle="modal" data-target="#crear_productos" class="btn btn-block btn-outline-success">
+                            <b>Registrar Producto</b>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-2">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 text-center">
+                    <div class="input-group mb-3">
+                        <button ng-click="tabla_ventas()" class="btn btn-block btn-outline-info">
+                            <b>Registro de Ventas</b>
+                        </button>
+                    </div>
+                </div> 
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+            </div>
+
+            <div class="row" ng-show="inventario_productos">
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+                <div class="col-12 col-sm-10 col-md-10">
+                   <table class="table table-bordered table-striped table-hover table-sm" id="lista_inventario"  ts-repeat>
+                        <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Codigo</th>
+                                <th>Nombre Producto</th>
+                                <th>Precio</th>
+                                <th>Unidades Disponibles</th>
+                                <th>Estado</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in get_all | filter:buscar" class="text-center">
+                                <td>{{$index + 1}}</td>
+                                <td>{{x.codigo_producto}}</td>
+                                <td>{{x.nombre_producto}}</td>
+                                <td>$ {{x.precio | number}}</td>
+                                <td>{{x.cantidad_disponible}}</td>
+                                <td>
+                                <span class="badge" ng-class="{'badge-success': x.cantidad_disponible > 0, 'badge-danger': x.cantidad_disponible === 0}">
+                                    {{ x.cantidad_disponible > 0 ? 'En stock' : 'Agotado' }}
+                                </span>
+                                </td>
+                                <td>
+                                    <a href="#" ng-click="deleteProducto(x.id_producto)">
+                                        <i style=" font-size: 18px;" class="fa-solid fa-trash text-danger"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-show="get_all.length < 1">
+                                <td colspan="9" class="text-center">No hay informacion en el sistema :(</td>
+                            </tr>
+                        </tbody>
+                   </table> 
+                </div>
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+            </div>
+
+            <div class="row" ng-show="lista_ventas">
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+                <div class="col-12 col-sm-12 col-md-2">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        </div>
+                        <input type="text" class="form-control" ng-model="buscar2" placeholder="Consultar Venta">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 text-center">
+                    <div class="input-group mb-3">
+                        <button data-toggle="modal" data-target="#crear_ventas" class="btn btn-block btn-outline-success">
+                            <b>Registrar Ventas</b>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-2">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2">
+                </div>
+                <div class="col-12 col-sm-6 col-md-2 text-center">
+                    <div class="input-group mb-3">
+                        <button ng-click="tabla_productos()" class="btn btn-block btn-outline-info">
+                            <b>Inventario de Productos</b>
+                        </button>
+                    </div>
+                </div> 
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+            </div>
+
+            <div class="row" ng-show="lista_ventas">
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+                <div class="col-12 col-sm-10 col-md-10">
+                   <table class="table table-bordered table-striped table-hover table-sm" id="lista_inventario"  ts-repeat>
+                        <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Nombre Cliente</th>
+                                <th>Tipo Cliente</th>
+                                <th>Fecha Venta</th>
+                                <th>Total Sin iva</th>
+                                <th>Total Con iva</th>
+                                <th>Ver factura</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in get_ventas | filter:buscar2" class="text-center">
+                                <td>{{$index + 1}}</td>
+                                <td>{{ x.nombre_cliente ? x.nombre_cliente : x.nombre_empresa }}</td>
+                                <td>{{x.tipo_cliente}}</td>
+                                <td>{{x.fecha_venta}}</td>
+                                <td>$ {{x.total_sin_iva | number}}</td>
+                                <td>$ {{x.total_iva | number}}</td>
+                                <td>
+                                    <a href="#" ng-click="descargarFactura(x.id_venta)">
+                                        <i style=" font-size: 18px;" class="fa-solid fa-file-pdf text-primary"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#" ng-click="deleteVenta(x.id_venta)">
+                                        <i style=" font-size: 18px;" class="fa-solid fa-trash text-danger"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-show="get_ventas.length < 1">
+                                <td colspan="9" class="text-center">No hay informacion en el sistema :(</td>
+                            </tr>
+                        </tbody>
+                   </table> 
+                </div>
+                <div class="col-0 col-sm-1 col-md-1" ></div>
+            </div>
+
+        </div>
+
+        <div class="modal fade" data-backdrop="static" id="crear_productos">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="configModalLabel">Registrar Productos</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="crearproducto">
+                            <div class="row" ng-repeat="producto in productos">
+                                <div class="col-6 col-sm-6 col-md-6">
+                                    <label><b>Codigo del Producto {{$index + 1}}</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-clipboard"></i></span>
+                                        </div>
+                                        <input ng-model="producto.codigo_producto" type="text" placeholder="Por favor escribir el codigo del producto" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6">
+                                    <label><b>Nombre del Producto {{$index + 1}}</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-boxes-packing"></i></span>
+                                        </div>
+                                        <input ng-model="producto.nombre_producto" type="text" placeholder="Por favor escribir el nombre del producto" class="form-control">
+                                    </div>                                
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6">
+                                    <label><b>Precio del Producto {{$index + 1}}</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-sack-dollar"></i></span>
+                                        </div>
+                                        <input ng-model="producto.precio" placeholder="Por favor escribir el precio" class="form-control" type="text" onkeypress="return numeros(event)">
+                                    </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6">
+                                    <label><b>Cantidad del Producto {{$index + 1}}</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                        </div>
+                                        <input ng-model="producto.cantidad" placeholder="Por favor escribir la cantidad" class="form-control" type="text" onkeypress="return numeros(event)">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-danger" ng-click="eliminarProducto($index)"><i class="fa-solid fa-trash"></i> Eliminar Producto</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-primary" ng-click="agregarProducto()"><i class="fa-solid fa-plus"></i> Agregar Producto</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" ng-click="crearProductos()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" data-backdrop="static" id="crear_ventas">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="configModalLabel">Registrar Ventas</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="crearventa">
+                            <div class="row">
+                                <div class="col-12 col-sm-12 col-md-12">
+                                    <label for="select_tipo"><b>Seleccione el tipo de cliente</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-user-tie"></i></span>
+                                        </div>
+                                        <select ng-model="cliente_tipo" class="form-control">
+                                            <option value="" disabled selected>Selecciona un tipo de cliente</option>
+                                            <option value="natural">Persona Natural</option>
+                                            <option value="empresa">Empresa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-12">
+                                    <p ng-show="cliente_tipo === 'empresa' || cliente_tipo === 'natural'">
+                                        <b>Por favor llenar esta informacion para poder agregar los productos a la venta</b>
+                                    </p>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-12" ng-show="cliente_tipo === 'natural'">
+                                    <label><b>Nombre de la persona</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                        </div>
+                                        <input ng-change="verificarCampos()" placeholder="Por favor escribir el nombre" class="form-control" type="text" ng-model="nombre_cliente" />
+                                    </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6" ng-show="cliente_tipo === 'empresa'">
+                                    <label><b>Nombre Empresa</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-industry"></i></span>
+                                        </div>
+                                        <input ng-change="verificarCampos()" placeholder="Por favor escribir el nombre" class="form-control" type="text" ng-model="nombre_empresa" />
+                                    </div>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6" ng-show="cliente_tipo === 'empresa'">
+                                    <label><b>NIT</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                        </div>
+                                        <input ng-change="verificarCampos()" placeholder="Por favor escribir el NIT" class="form-control" type="text" ng-model="nit" onkeypress="return numeros(event)"/>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-12" ng-show="cliente_tipo === 'empresa'">
+                                    <label><b>Razón Social</b></label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa-solid fa-message"></i></span>
+                                        </div>
+                                        <textarea ng-change="verificarCampos()" placeholder="Por favor escribir la razón social" class="form-control" ng-model="razonSocial"></textarea>
+                                    </div>
+                                </div>
+                    
+                                <div class="col-12" ng-repeat="x in productos_venta">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label><b>Seleccione el producto {{$index + 1}}</b></label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fa-solid fa-boxes-packing"></i></span>
+                                                </div>
+                                                <select class="form-control" ng-model="x.tipo_producto" ng-change="calcularTotalIva(x)">
+                                                    <option value="" disabled selected>Selecciona un producto</option>
+                                                    <option ng-repeat="prod in ver_productos" value="{{prod.id_producto}}">{{prod.nombre_producto}} - ${{prod.precio}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label><b>Cantidad vendida {{$index + 1}}</b></label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fa-solid fa-sack-dollar"></i></span>
+                                                </div>
+                                                <input ng-model="x.cantidad" placeholder="Por favor escribir la cantidad de unidades vendidas" class="form-control" type="text" ng-change="calcularTotalIva(x)" onkeypress="return numeros(event)"/>
+                                            </div>
+                                            <div ng-show="x.total_iva !== undefined">
+                                                <label><b>Total Con iva: </b>$<span ng-model="x.total">{{x.total_iva| number}}</span></label>
+                                                <label><b>Total Sin iva: </b>$<span ng-model="x.total_sin_iva">{{x.total_sin_iva| number}}</span></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-danger" ng-click="eliminarProductoVenta($index)"><i class="fa-solid fa-trash"></i> Eliminar Producto</button>
+                                        </div>
+                                    </div>
+                                </div>
+                    
+                                <div class="col-12" ng-show="cliente_tipo === 'empresa' || cliente_tipo === 'natural'">
+                                    <button ng-disabled="!camposCompletos" type="button" class="btn btn-primary" ng-click="agregarProductoVenta()">
+                                        <i class="fa-solid fa-plus"></i> Agregar otro producto
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" ng-click="crearVentas()"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/gestion_ventas_productos.js"></script>
+    </body>
+</HTML>
